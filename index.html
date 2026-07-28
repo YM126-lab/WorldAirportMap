@@ -26,6 +26,20 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 </head>
 
 <body>
+    <div id="loginScreen">
+    <h2>🌍 World Airport Map</h2>
+
+    <input
+        type="password"
+        id="passwordInput"
+        placeholder="Password">
+
+    <button onclick="checkPassword()">
+        Login
+    </button>
+</div>
+
+<div id="mainContent" style="display:none;">
 
 <header>
 
@@ -99,6 +113,35 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 
 <script src="script.js"></script>
 
-</body>
+</div>
 
+<script>
+function checkPassword() {
+
+    const password =
+        document.getElementById(
+            "passwordInput"
+        ).value;
+
+    if (password === "QST") {
+
+        document.getElementById(
+            "loginScreen"
+        ).style.display = "none";
+
+        document.getElementById(
+            "mainContent"
+        ).style.display = "block";
+
+    } else {
+
+        alert("Wrong password");
+
+    }
+
+}
+</script>
+
+</body>
 </html>
+``
