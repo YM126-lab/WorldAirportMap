@@ -133,6 +133,10 @@ function checkPassword() {
             "mainContent"
         ).style.display = "block";
 
+        setTimeout(() => {
+            map.invalidateSize();
+        }, 100);
+
     } else {
 
         alert("Wrong password");
@@ -140,7 +144,18 @@ function checkPassword() {
     }
 
 }
+
+document
+    .getElementById("passwordInput")
+    .addEventListener("keypress", function(e){
+
+        if(e.key === "Enter"){
+            checkPassword();
+        }
+
+    });
 </script>
+``
 
 </body>
 </html>
