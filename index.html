@@ -125,17 +125,18 @@ function checkPassword() {
 
     if (password === "QST") {
 
-        document.getElementById(
-            "loginScreen"
-        ).style.display = "none";
+    document.getElementById(
+        "loginScreen"
+    ).style.display = "none";
 
-        document.getElementById(
-            "mainContent"
-        ).style.display = "block";
+    document.getElementById(
+        "mainContent"
+    ).style.display = "block";
 
-        setTimeout(() => {
-            map.invalidateSize();
-        }, 100);
+    setTimeout(() => {
+        map.invalidateSize();
+    }, 100);
+
 
     } else {
 
