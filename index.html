@@ -26,21 +26,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 </head>
 
 <body>
-    <div id="loginScreen">
-    <h2>🌍 World Airport Map</h2>
-
-    <input
-        type="password"
-        id="passwordInput"
-        placeholder="Password">
-
-    <button onclick="checkPassword()">
-        Login
-    </button>
-</div>
-
-<div id="mainContent" style="display:none;">
-
+    
 <header>
 
 <h1>🌍 World Airport Map</h1>
@@ -116,45 +102,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 </div>
 
 <script>
-function checkPassword() {
 
-    const password =
-        document.getElementById(
-            "passwordInput"
-        ).value;
-
-    if (password === "QST") {
-
-    document.getElementById(
-        "loginScreen"
-    ).style.display = "none";
-
-    document.getElementById(
-        "mainContent"
-    ).style.display = "block";
-
-    setTimeout(() => {
-        map.invalidateSize();
-    }, 100);
-
-
-    } else {
-
-        alert("Wrong password");
-
-    }
-
-}
-
-document
-    .getElementById("passwordInput")
-    .addEventListener("keypress", function(e){
-
-        if(e.key === "Enter"){
-            checkPassword();
-        }
-
-    });
 </script>
 ``
 
