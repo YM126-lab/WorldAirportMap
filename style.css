@@ -137,3 +137,30 @@ height:calc(100% - 110px);
     padding: 6px 12px;
     cursor: pointer;
 }
+
+#loginScreen {
+    position: fixed;
+    inset: 0;
+    background: #111;
+    color: white;
+
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+    align-items: center;
+
+    z-index: 99999;
+}
+
+#loginScreen input {
+    width: 300px;
+    padding: 10px;
+    margin: 10px;
+}
+
+#loginScreen button {
+    padding: 10px 20px;
+    cursor: pointer;
+}
+``
