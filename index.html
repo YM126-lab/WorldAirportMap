@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+<meta charset="UTF-8">
+
+<title>World Airport Map</title>
+
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
+
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
+
+<link rel="stylesheet" href="style.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.awesome-markers/2.0.4/leaflet.awesome-markers.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+</head>
+
+<body>
+   
+<header>
+
+<h1 id="title">🌍 World Airport Map</h1>
+
+<div id="searchBox">
+
+    <input
+    type="text"
+    id="search"
+    placeholder="ICAO・IATA・Airport Name">
+
+    <button id="searchButton">
+    Search
+    </button>
+
+    
+    <select id="countryFilter">
+    <option value="" id="allCountriesOption">
+        All Countries
+    </option>
+</select>
+
+    <div id="searchCount"></div>
+
+    <div id="results"></div>
+
+    <button id="themeButton">
+    🌙 Dark Mode
+</button>
+<select id="languageSelect">
+    <option value="en">English</option>
+    <option value="ja">日本語</option>
+</select>
+
+</div>
+
+<br><br>
+
+<label id="largeLabel">
+    <input type="checkbox" id="large" checked>
+    Large Airport
+</label>
+
+<label id="mediumLabel">
+    <input type="checkbox" id="medium" checked>
+    Medium Airport
+</label>
+
+<label id="smallLabel">
+    <input type="checkbox" id="small" checked>
+    Small Airport
+</label>
+
+
+</div>
+</header>
+
+<div id="airportInfo">
+    Select an airport
+</div>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.awesome-markers/2.0.4/leaflet.awesome-markers.js"></script>
+
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/leaflet.geodesic@2.7.0/dist/leaflet.geodesic.umd.min/papaparse.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/leaflet.geodesic@2.7.0/dist/leaflet.geodesic.umd.min.js"></scriptcript.js"></script>
+
+<script src="script.js"></script>
+
+</body>
+</html>
