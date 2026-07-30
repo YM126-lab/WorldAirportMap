@@ -30,8 +30,39 @@ map.addLayer(markers);
 // 検索用
 const airports = [];
 
+// 選択中空港用
+function showSelectedAirport(lat, lon) {
+
+    if (selectedAirportMarker) {
+        map.removeLayer(selectedAirportMarker);
+    }
+
+    selectedAirportMarker = L.circleMarker(
+        [lat, lon],
+        {
+            radius: 16,
+            color: "#00FF00",
+            fillColor: "#00FF00",
+            fillOpacity: 0.2,
+            weight: 3,
+            interactive: false
+        }
+    ).addTo(map);
+
+}
+
+//時刻用
+let clockInterval = null;
+
+// 選択中空港用
+let selectedAirportMarker = null;
+
 // 航空路線用
 const routes = [];
+
+let routeLayer = L.layerGroup().addTo(map);
+
+let currentAirportIata = null;
 
 // 航空会社用
 const airlines = {};
@@ -47,8 +78,10 @@ const translations = {
         largeAirport: "大規模空港",
         mediumAirport: "中規模空港",
         smallAirport: "小規模空港",
-        allCountries: "すべての国"
+        allCountries: "すべての国",
+        showRoutes: "✈ 航路表示"
     },
+
 
     en: {
         title: "🌍 World Airport Map",
@@ -58,10 +91,33 @@ const translations = {
         largeAirport: "Large Airport",
         mediumAirport: "Medium Airport",
         smallAirport: "Small Airport",
-        allCountries: "All Countries"
+        allCountries: "All Countries",
+        showRoutes: "✈ Show Routes"
     }
 
 };
+
+// 天気用
+function getWeatherName(code) {
+
+    const weatherCodes = {
+        0: "Clear Sky",
+        1: "Mainly Clear",
+        2: "Partly Cloudy",
+        3: "Cloudy",
+        45: "Fog",
+        48: "Depositing Rime Fog",
+        51: "Light Drizzle",
+        61: "Rain",
+        71: "Snow",
+        80: "Rain Showers",
+        95: "Thunderstorm"
+    };
+
+    return weatherCodes[code] || "Unknown";
+};
+
+
 
 // ===========================
 // CSV読み込み
@@ -137,7 +193,7 @@ Papa.parse("data/airports.csv", {
 
                 case "large_airport":
                     color = "red";
-                    radius = 8;
+                    radius = 9;
                     break;
 
                 case "medium_airport":
@@ -177,7 +233,7 @@ Papa.parse("data/airports.csv", {
                 radius: radius,
                 color: color,
                 fillColor: color,
-                fillOpacity: 0.8,
+                fillOpacity: 0.9,
                 weight: 1
             });
 
@@ -217,11 +273,24 @@ Papa.parse("data/airports.csv", {
                 `;
             }
 
-            marker.bindPopup(popup);
-            marker.on("click", () => {
+       marker.on("click", (e) => {
 
-    showRoutes(iata);
-   
+    L.DomEvent.stopPropagation(e);
+
+    currentAirportIata = iata;
+
+    showSelectedAirport(lat, lon);
+
+    if (document.getElementById("showRoutesCheck").checked) {
+
+        showRoutes(iata);
+
+    } else {
+
+        routeLayer.clearLayers();
+
+    }
+
     const routeCount =
         routes.filter(r => r.source === iata).length;
 
@@ -233,18 +302,94 @@ Papa.parse("data/airports.csv", {
         ).size;
 
     document.getElementById("airportInfo").innerHTML = `
-        <h2>${name}</h2>
+<h2>${name}</h2>
 
-        <b>ICAO:</b> ${icao}<br>
-        <b>IATA:</b> ${iata || "-"}<br>
-        <b>Country:</b> ${country}<br>
-        <b>City:</b> ${city || "-"}<br>
-        <b>Type:</b> ${type}<br>
+<b>ICAO:</b> ${icao}<br>
+<b>IATA:</b> ${iata || "-"}<br>
+<b>GPS:</b> ${gps || "-"}<br>
+<b>Local Code:</b> ${local || "-"}<br><br>
 
-        <b>Routes:</b> ${routeCount}<br>
-        <b>Destinations:</b> ${destinationCount}<br>
+<b>Country:</b> ${country}<br>
+<b>Region:</b> ${region}<br>
+<b>City:</b> ${city || "-"}<br><br>
+
+<b>Type:</b> ${type}<br>
+<b>Elevation:</b> ${elevation || "-"} ft<br><br>
+
+<b>Routes:</b> ${routeCount}<br>
+<b>Destinations:</b> ${destinationCount}<br><br>
+
+${wikipedia ?
+`${wikipedia}<br>`
+: ""}
+
+${home ?
+`${home}🌐 Official Website</a><br>`
+: ""}
+`;
+
+fetch(
+    `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&timezone=auto`
+)
+.then(response => response.json())
+.then(weather => {
+
+    const temp =
+        weather.current.temperature_2m;
+
+    const weatherName =
+        getWeatherName(
+            weather.current.weather_code
+        );
+
+    const timezone =
+        weather.timezone;
+
+    function updateClock() {
+
+    const localTime =
+        new Date().toLocaleTimeString(
+            "ja-JP",
+            {
+                timeZone: timezone,
+                hour: "2-digit",
+                minute: "2-digit"
+            }
+        );
+
+    const clockElement =
+        document.getElementById("localTime");
+
+    if (clockElement) {
+
+        clockElement.textContent =
+            "🕒 " + localTime;
+
+    }
+
+}
+
+    document.getElementById("airportInfo").innerHTML += `
+        <br><br>
+
+        <b>Current Weather</b><br>
+
+        🌡 ${temp}°C<br>
+
+        ☁ ${weatherName}<br>
+
+        🕒 <span id="localTime"></span>
     `;
 
+    updateClock();
+
+if (clockInterval) {
+    clearInterval(clockInterval);
+}
+
+clockInterval = setInterval(updateClock, 1000);
+
+});
 });
             markers.addLayer(marker);
 
@@ -284,8 +429,12 @@ countries.forEach(country => {
 });
         console.log(`${airports.length} airports loaded`);
 
-        applyFilter();
-    }
+        console.log(`${airports.length} airports loaded`);
+
+applyFilter();
+updateMarkerSizes();
+
+}
 });
 
 
@@ -336,7 +485,8 @@ function searchAirport() {
         a.country === selectedCountry
     )
 
-);
+)
+
 
     console.log(results);
     console.log(`${results.length} airports found`);
@@ -367,35 +517,43 @@ function searchAirport() {
 
     item.addEventListener("click", () => {
 
-    map.flyTo([airport.lat, airport.lon], 6);
+        map.flyTo([airport.lat, airport.lon], 6);
 
-    airport.marker.openPopup();
-
-    map.once("moveend", () => {
-
-        showRoutes(airport.iata);
+        airport.marker.fire("click");
 
     });
-
-    const routeCount =
-        routes.filter(r => r.source === airport.iata).length;
-
-    document.getElementById("airportInfo").innerHTML = `
-        <h2>${airport.name}</h2>
-
-        <b>ICAO:</b> ${airport.icao}<br>
-        <b>IATA:</b> ${airport.iata || "-"}<br>
-        <b>Country:</b> ${airport.country}<br>
-        <b>City:</b> ${airport.city || "-"}<br>
-        <b>Type:</b> ${airport.type}<br>
-        <b>Routes:</b> ${routeCount}<br>
-    `;
-
-});
 
     resultsDiv.appendChild(item);
 
 });
+
+}
+
+function updateMarkerSizes() {
+
+    const zoom = map.getZoom();
+
+    airports.forEach(airport => {
+
+        let radius;
+
+        if (airport.type === "large_airport") {
+
+            radius = Math.min(12, Math.max(3, zoom * 0.8));
+
+        } else if (airport.type === "medium_airport") {
+
+            radius = Math.min(9, Math.max(2.5, zoom * 0.6));
+
+        } else {
+
+            radius = Math.min(6, Math.max(2, zoom * 0.4));
+
+        }
+
+        airport.marker.setRadius(radius);
+
+    });
 
 }
 
@@ -456,8 +614,22 @@ document
     .getElementById("small")
     .addEventListener("change", applyFilter);
 
+map.on("zoomend", updateMarkerSizes);
+
 // 地図の何もない場所をクリックしたら詳細をリセット
 map.on("click", () => {
+
+    console.log("MAP CLICK");
+    console.log(selectedAirportMarker);
+
+    if (selectedAirportMarker) {
+        map.removeLayer(selectedAirportMarker);
+        selectedAirportMarker = null;
+    }
+
+    currentAirportIata = null;
+
+    routeLayer.clearLayers();
 
     document.getElementById("airportInfo").innerHTML =
         "Select an airport";
@@ -526,7 +698,6 @@ Papa.parse("data/routes.dat", {
     }
 
 });
-let routeLayer = L.layerGroup().addTo(map);
 
 function showRoutes(iata) {
 
@@ -738,6 +909,11 @@ function changeLanguage(lang) {
 
      document.getElementById("smallLabel").lastChild.textContent =
     " " + t.smallAirport;
+
+     document.getElementById("showRoutesLabel")
+    .lastChild.textContent =
+    " " + t.showRoutes;
+
     document.getElementById("allCountriesOption")
     .textContent = t.allCountries;
 }
@@ -751,3 +927,23 @@ document
     });
 
 changeLanguage("en");
+
+document
+    .getElementById("showRoutesCheck")
+    .addEventListener("change", function () {
+
+        if (this.checked) {
+
+            if (currentAirportIata) {
+
+                showRoutes(currentAirportIata);
+
+            }
+
+        } else {
+
+            routeLayer.clearLayers();
+
+        }
+
+    });
