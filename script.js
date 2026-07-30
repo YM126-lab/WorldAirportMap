@@ -4,7 +4,16 @@
 // ===========================
 
 // 地図
-const map = L.map("map").setView([20, 0], 2);
+const map = L.map("map", {
+    worldCopyJump: true,
+    minZoom: 2,
+    maxBoundsViscosity: 1.0
+}).setView([20, 0], 2);
+
+map.setMaxBounds([
+    [-80, -Infinity],
+    [80, Infinity]
+]);
 
 // ダークモード用
 let currentLayer;
@@ -16,6 +25,7 @@ currentLayer = L.tileLayer(
     {
         subdomains: "abcd",
         maxZoom: 20,
+        noWrap: false,
         attribution: "&copy; OpenStreetMap &copy; CARTO"
     }
 ).addTo(map);
