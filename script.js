@@ -539,17 +539,17 @@ function updateMarkerSizes() {
 
         if (airport.type === "large_airport") {
 
-            radius = Math.min(12, Math.max(3, zoom * 0.8));
+    radius = Math.min(14, Math.max(4, zoom * 1.0));
 
-        } else if (airport.type === "medium_airport") {
+} else if (airport.type === "medium_airport") {
 
-            radius = Math.min(9, Math.max(2.5, zoom * 0.6));
+    radius = Math.min(11, Math.max(3, zoom * 0.8));
 
-        } else {
+} else {
 
-            radius = Math.min(6, Math.max(2, zoom * 0.4));
+    radius = Math.min(8, Math.max(2.5, zoom * 0.5));
 
-        }
+}
 
         airport.marker.setRadius(radius);
 
