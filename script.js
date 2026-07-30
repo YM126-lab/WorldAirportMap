@@ -30,6 +30,7 @@ currentLayer = L.tileLayer(
     }
 ).addTo(map);
 
+
 // マーカークラスター
 const markers = L.markerClusterGroup({
     disableClusteringAtZoom: 5
@@ -254,7 +255,8 @@ Papa.parse("data/airports.csv", {
 
                 <b>ICAO</b> : ${icao}<br>
                 <b>IATA</b> : ${iata || "-"}<br>
-                <b>GPS</b> : ${gps || "-"}<br>
+                <b>Latitude:</b> ${lat.toFixed(4)}<br>
+                <b>Longitude:</b> ${lon.toFixed(4)}<br>
                 <b>Local</b> : ${local || "-"}<br><br>
 
                 <b>Country</b> : ${country}<br>
@@ -311,31 +313,50 @@ Papa.parse("data/airports.csv", {
                 .map(r => r.destination)
         ).size;
 
-    document.getElementById("airportInfo").innerHTML = `
-<h2>${name}</h2>
+   document.getElementById("airportInfo").innerHTML = `
+<div class="airport-card">
 
-<b>ICAO:</b> ${icao}<br>
-<b>IATA:</b> ${iata || "-"}<br>
-<b>GPS:</b> ${gps || "-"}<br>
-<b>Local Code:</b> ${local || "-"}<br><br>
+    <div class="airport-title">
+        ✈ ${name}
+    </div>
 
-<b>Country:</b> ${country}<br>
-<b>Region:</b> ${region}<br>
-<b>City:</b> ${city || "-"}<br><br>
+    <div class="airport-section">
+        <b>ICAO:</b> ${icao}<br>
+        <b>IATA:</b> ${iata || "-"}<br>
+        <b>Latitude:</b> ${lat.toFixed(4)}<br>
+        <b>Longitude:</b> ${lon.toFixed(4)}<br>
+        <b>Local Code:</b> ${local || "-"}
+    </div>
 
-<b>Type:</b> ${type}<br>
-<b>Elevation:</b> ${elevation || "-"} ft<br><br>
+    <div class="airport-section">
+        <b>Country:</b> ${country}<br>
+        <b>Region:</b> ${region}<br>
+        <b>City:</b> ${city || "-"}
+    </div>
 
-<b>Routes:</b> ${routeCount}<br>
-<b>Destinations:</b> ${destinationCount}<br><br>
+    <div class="airport-section">
+        <b>Type:</b> ${type}<br>
+        <b>Elevation:</b> ${elevation || "-"} ft
+    </div>
 
-${wikipedia ?
-`${wikipedia}<br>`
-: ""}
+    <div class="airport-section route-box">
+        <b>Routes:</b> ${routeCount}<br>
+        <b>Destinations:</b> ${destinationCount}
+    </div>
 
-${home ?
-`${home}🌐 Official Website</a><br>`
-: ""}
+    ${
+        wikipedia
+        ? `${wikipedia}<br>`
+        : ""
+    }
+
+    ${
+        home
+        ? `${home}🌐 Official Website<br>`
+        : ""
+    }
+
+</div>
 `;
 
 fetch(
@@ -380,16 +401,16 @@ fetch(
 }
 
     document.getElementById("airportInfo").innerHTML += `
-        <br><br>
+<div class="weather-box">
 
-        <b>Current Weather</b><br>
+    <b>☀ Current Weather</b><br><br>
 
-        🌡 ${temp}°C<br>
+    🌡 ${temp}°C<br>
+    ☁ ${weatherName}<br>
+    🕒 <span id="localTime"></span>
 
-        ☁ ${weatherName}<br>
-
-        🕒 <span id="localTime"></span>
-    `;
+</div>
+`;
 
     updateClock();
 
@@ -560,6 +581,7 @@ function updateMarkerSizes() {
     radius = Math.min(8, Math.max(2.5, zoom * 0.5));
 
 }
+
 
         airport.marker.setRadius(radius);
 
